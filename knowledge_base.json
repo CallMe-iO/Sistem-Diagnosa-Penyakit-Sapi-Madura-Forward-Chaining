@@ -1,0 +1,37 @@
+{
+  "symptoms": [
+    {"code": "JG01", "name": "Demam tinggi"},
+    {"code": "JG02", "name": "Sulit bernapas"},
+    {"code": "JG03", "name": "Nafsu makan menurun"},
+    {"code": "JG04", "name": "Keluar darah dari salah satu lubang tubuh"},
+    {"code": "JG05", "name": "Pembengkakan bawah leher/dada/perut/tulang rusuk"},
+    {"code": "JG06", "name": "Air susu bercampur nanah/darah"},
+    {"code": "JG07", "name": "Kelenjar ambing bengkak"},
+    {"code": "JG08", "name": "Aliran/keluarnya susu tidak normal"},
+    {"code": "JG10", "name": "Perut buncit"},
+    {"code": "JG11", "name": "Lemah"},
+    {"code": "JG12", "name": "Pucat pada selaput lendir mata"},
+    {"code": "JG13", "name": "Diare"},
+    {"code": "JG14", "name": "Perut kiri membesar"},
+    {"code": "JG15", "name": "Pinggang membungkuk"},
+    {"code": "JG16", "name": "Napas cepat/pendek"},
+    {"code": "JG17", "name": "Selaput lendir & kelopak bengkak"},
+    {"code": "JG18", "name": "Tahi mata purulen/lendir bernanah"},
+    {"code": "JG19", "name": "Air mata terus-menerus"},
+    {"code": "JG20", "name": "Memakan tanah"},
+    {"code": "JG21", "name": "Hipersalivasi"},
+    {"code": "JG22", "name": "Lesi/lepuh pada mulut/hidung/kuku"},
+    {"code": "JG23", "name": "Pincang/nyeri kuku"},
+    {"code": "JG24", "name": "Batuk"}
+  ],
+  "diseases": [
+    {"code": "P1", "name": "Anthrax", "symptoms": ["JG01", "JG02", "JG03", "JG04"]},
+    {"code": "P2", "name": "Pink Eye", "symptoms": ["JG17", "JG18", "JG19"]},
+    {"code": "P3", "name": "Mastitis", "symptoms": ["JG03", "JG06", "JG07", "JG08"]},
+    {"code": "P4", "name": "Cacingan", "symptoms": ["JG10", "JG11", "JG12", "JG13", "JG20"]},
+    {"code": "P5", "name": "Bloat / Tympani", "symptoms": ["JG14", "JG15", "JG16"]},
+    {"code": "P6", "name": "Penyakit Mulut dan Kuku (PMK)", "symptoms": ["JG01", "JG21", "JG22", "JG23"]},
+    {"code": "P7", "name": "Pneumonia", "symptoms": ["JG01", "JG02", "JG16", "JG24"]},
+    {"code": "P8", "name": "Ngorok / Pasteurellosis", "symptoms": ["JG01", "JG02", "JG05"]}
+  ]
+}
