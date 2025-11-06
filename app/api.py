@@ -56,19 +56,24 @@ def home() -> HTMLResponse:
     <html lang=\"id\">
     <head>
         <meta charset=\"utf-8\" />
-        <title>Sistem Pakar Diagnosa Penyakit Sapi</title>
+        <title>Sistem Pakar Diagnosa Penyakit Sapi Madura</title>
         <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
         <style>
             body { font-family: Arial, sans-serif; margin: 2rem; }
             fieldset { border: 1px solid #ccc; padding: 1rem; }
             legend { font-weight: bold; }
-            .symptom { margin-bottom: 0.35rem; }
-            pre { background: #f5f5f5; padding: 1rem; border-radius: 4px; }
-            button { margin-top: 1rem; padding: 0.6rem 1rem; }
+            .symptom { margin-bottom: 0.35rem; display: inline-flex; align-items: center; gap: 0.35rem; }
+            button { margin-top: 1rem; padding: 0.6rem 1rem; cursor: pointer; }
+            #result { margin-top: 1.5rem; }
+            .result-card { border: 1px solid #e0e0e0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; background: #fafafa; }
+            .status { font-weight: bold; margin: 0.25rem 0 0.75rem; }
+            .status-complete { color: #0a845e; }
+            .status-partial { color: #c27803; }
+            .empty { color: #666; font-style: italic; }
         </style>
     </head>
     <body>
-        <h1>Sistem Pakar Diagnosa Penyakit Sapi</h1>
+        <h1>Sistem Pakar Diagnosa Penyakit Sapi Madura</h1>
         <p>Pilih gejala yang terlihat kemudian tekan <strong>Diagnosa</strong>.</p>
         <label><input type=\"checkbox\" id=\"strict\" /> Mode ketat (rule lengkap saja)</label>
         <form id=\"diagnosis-form\">
@@ -78,11 +83,14 @@ def home() -> HTMLResponse:
             <button type=\"submit\">Diagnosa</button>
         </form>
         <h2>Hasil</h2>
-        <pre id=\"result\">Belum ada data</pre>
+        <div id=\"result\" class=\"empty\">Belum ada data</div>
         <script>
+        let symptomLookup = new Map();
+
         async function fetchSymptoms() {
             const res = await fetch('/api/symptoms');
             const symptoms = await res.json();
+            symptomLookup = new Map(symptoms.map(item => [item.code, item.name]));
             const container = document.getElementById('symptom-list');
             symptoms.forEach(symptom => {
                 const label = document.createElement('label');
@@ -91,9 +99,43 @@ def home() -> HTMLResponse:
                 checkbox.type = 'checkbox';
                 checkbox.value = symptom.code;
                 label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(` ${symptom.code} - ${symptom.name}`));
+                label.appendChild(document.createTextNode(symptom.name));
                 container.appendChild(label);
                 container.appendChild(document.createElement('br'));
+            });
+        }
+
+        function formatSymptoms(codes) {
+            if (!codes.length) {
+                return 'Tidak ada';
+            }
+            return codes.map(code => symptomLookup.get(code) || code).join(', ');
+        }
+
+        function renderResult(payload) {
+            const container = document.getElementById('result');
+            container.classList.remove('empty');
+            container.innerHTML = '';
+
+            if (!payload.diagnoses.length) {
+                const message = payload.message || 'Tidak diketahui';
+                container.classList.add('empty');
+                container.textContent = message;
+                return;
+            }
+
+            payload.diagnoses.forEach(entry => {
+                const card = document.createElement('article');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <h3>${entry.disease.name}</h3>
+                    <p class="status ${entry.complete ? 'status-complete' : 'status-partial'}">
+                        ${entry.complete ? 'Kecocokan penuh' : 'Masih membutuhkan gejala lain'}
+                    </p>
+                    <p><strong>Gejala terpenuhi:</strong> ${formatSymptoms(entry.matched)}</p>
+                    <p><strong>Perlu diperiksa:</strong> ${entry.missing.length ? formatSymptoms(entry.missing) : 'Tidak ada'}</p>
+                `;
+                container.appendChild(card);
             });
         }
 
@@ -108,7 +150,7 @@ def home() -> HTMLResponse:
                 body: JSON.stringify({ selected }),
             });
             const payload = await res.json();
-            document.getElementById('result').textContent = JSON.stringify(payload, null, 2);
+            renderResult(payload);
         });
 
         fetchSymptoms();
