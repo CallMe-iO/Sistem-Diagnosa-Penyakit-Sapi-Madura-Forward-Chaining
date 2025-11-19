@@ -4,7 +4,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, List
 
-from .models import DiagnoseResponse, DiagnosisResult, Disease, KnowledgeBase
+try:
+    # Relative import when package initialized
+    from .models import DiagnoseResponse, DiagnosisResult, Disease, KnowledgeBase
+except ImportError:  # pragma: no cover - fallback for script execution
+    from models import DiagnoseResponse, DiagnosisResult, Disease, KnowledgeBase  # type: ignore
 
 
 @dataclass

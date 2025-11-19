@@ -6,9 +6,15 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
 
-from .engine import ForwardChainingEngine
-from .models import DiagnoseRequest, DiagnoseResponse, Symptom
-from .storage import get_knowledge_base, get_symptom_codes
+try:
+    # Default to package-relative imports when running via `uvicorn app.main:app`
+    from .engine import ForwardChainingEngine
+    from .models import DiagnoseRequest, DiagnoseResponse, Symptom
+    from .storage import get_knowledge_base, get_symptom_codes
+except ImportError:  # pragma: no cover - fallback for script execution
+    from engine import ForwardChainingEngine  # type: ignore
+    from models import DiagnoseRequest, DiagnoseResponse, Symptom  # type: ignore
+    from storage import get_knowledge_base, get_symptom_codes  # type: ignore
 
 router = APIRouter()
 

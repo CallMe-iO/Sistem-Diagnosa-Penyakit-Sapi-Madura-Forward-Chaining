@@ -4,7 +4,10 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
-from .models import KnowledgeBase
+try:
+    from .models import KnowledgeBase
+except ImportError:  # pragma: no cover - fallback for script execution
+    from models import KnowledgeBase  # type: ignore
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 KB_PATH = BASE_DIR / "knowledge_base.json"
