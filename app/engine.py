@@ -1,11 +1,11 @@
-"""Forward chaining inference engine for cattle disease diagnosis."""
+"""Mesin inferensi forward chaining untuk mendiagnosa penyakit sapi."""
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterable, List
 
 try:
-    # Relative import when package initialized
+    # Mengutamakan impor relatif ketika modul dijalankan sebagai bagian paket
     from .models import DiagnoseResponse, DiagnosisResult, Disease, KnowledgeBase
 except ImportError:  # pragma: no cover - fallback for script execution
     from models import DiagnoseResponse, DiagnosisResult, Disease, KnowledgeBase  # type: ignore
@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover - fallback for script execution
 
 @dataclass
 class Evaluation:
-    """Internal representation of a disease evaluation."""
+    """Struktur internal yang memotret hasil evaluasi satu penyakit."""
 
     disease: Disease
     matched: List[str]
@@ -25,13 +25,13 @@ class Evaluation:
 
 
 class ForwardChainingEngine:
-    """Simple forward chaining engine using subset evaluation."""
+    """Mesin forward chaining sederhana yang menilai kecocokan subset gejala."""
 
     def __init__(self, knowledge_base: KnowledgeBase):
         self.knowledge_base = knowledge_base
 
     def diagnose(self, selected: Iterable[str], *, strict: bool = False) -> DiagnoseResponse:
-        """Run the engine and return a structured response."""
+        """Menjalankan mesin inferensi dan mengembalikan struktur hasil diagnosa."""
 
         selected_set = {code.upper() for code in selected}
         evaluations = [self._evaluate_rule(disease, selected_set) for disease in self.knowledge_base.diseases]
@@ -55,7 +55,7 @@ class ForwardChainingEngine:
         return DiagnoseResponse(diagnoses=diagnoses, message=message)
 
     def _evaluate_rule(self, disease: Disease, selected: set[str]) -> Evaluation:
-        """Compute which required symptoms are present."""
+        """Menentukan gejala wajib mana yang sudah terpenuhi oleh pilihan pengguna."""
 
         required = list(dict.fromkeys(disease.symptoms))
         matched = sorted(code for code in required if code in selected)

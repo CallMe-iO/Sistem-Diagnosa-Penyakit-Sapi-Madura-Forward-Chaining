@@ -1,4 +1,4 @@
-"""Pydantic models for the cattle disease diagnosis service."""
+"""Model Pydantic yang dipakai layanan diagnosa penyakit sapi."""
 from __future__ import annotations
 
 from typing import List, Optional
@@ -7,14 +7,14 @@ from pydantic import BaseModel, Field, validator
 
 
 class Symptom(BaseModel):
-    """Represents a possible symptom in the knowledge base."""
+    """Merepresentasikan satu gejala yang terdaftar pada basis pengetahuan."""
 
     code: str = Field(..., min_length=1)
     name: str = Field(..., min_length=1)
 
 
 class Disease(BaseModel):
-    """Represents a disease rule and its prerequisite symptoms."""
+    """Menjelaskan satu penyakit lengkap dengan daftar gejala yang wajib terpenuhi."""
 
     code: str = Field(..., min_length=1)
     name: str = Field(..., min_length=1)
@@ -22,20 +22,20 @@ class Disease(BaseModel):
 
 
 class KnowledgeBase(BaseModel):
-    """Concrete schema for the JSON knowledge base file."""
+    """Skema lengkap untuk file JSON basis pengetahuan yang dimuat engine."""
 
     symptoms: List[Symptom]
     diseases: List[Disease]
 
 
 class DiagnoseRequest(BaseModel):
-    """Payload received from /api/diagnose."""
+    """Payload yang dikirim ke endpoint /api/diagnose berisi gejala pilihan pengguna."""
 
     selected: List[str] = Field(default_factory=list, description="List of symptom codes selected by the user")
 
     @validator("selected", pre=True)
     def _normalize_selected(cls, value: Optional[List[str]]) -> List[str]:  # noqa: D401
-        """Ensure we always work with a list of unique, upper-cased codes."""
+        """Menjamin daftar kode selalu unik dan berformat huruf kapital agar konsisten."""
 
         if value is None:
             return []
@@ -50,7 +50,7 @@ class DiagnoseRequest(BaseModel):
 
 
 class DiagnosisResult(BaseModel):
-    """Details of a disease evaluation run."""
+    """Rincian evaluasi penyakit setelah aturan forward chaining dijalankan."""
 
     disease: Disease
     matched: List[str]
@@ -59,7 +59,7 @@ class DiagnosisResult(BaseModel):
 
 
 class DiagnoseResponse(BaseModel):
-    """API response emitted by /api/diagnose."""
+    """Struktur respons resmi yang dikirim endpoint /api/diagnose ke klien."""
 
     diagnoses: List[DiagnosisResult]
     message: Optional[str] = None

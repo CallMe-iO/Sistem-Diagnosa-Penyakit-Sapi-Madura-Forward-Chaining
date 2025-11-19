@@ -1,4 +1,4 @@
-"""FastAPI routers for the diagnosis API and simple UI."""
+"""Router FastAPI yang menyediakan endpoint diagnosa serta UI sederhana."""
 from __future__ import annotations
 
 from typing import List
@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
 
 try:
-    # Default to package-relative imports when running via `uvicorn app.main:app`
+    # Standar impor relatif paket ketika aplikasi dijalankan lewat `uvicorn app.main:app`
     from .engine import ForwardChainingEngine
     from .models import DiagnoseRequest, DiagnoseResponse, Symptom
     from .storage import get_knowledge_base, get_symptom_codes
@@ -20,22 +20,22 @@ router = APIRouter()
 
 
 def get_engine() -> ForwardChainingEngine:
-    """Return a singleton engine instance."""
+    """Mengembalikan satu-satunya instance mesin inferensi agar dapat dipakai ulang."""
 
     kb = get_knowledge_base()
     return ForwardChainingEngine(kb)
 
-
+ 
 @router.get("/api/symptoms", response_model=List[Symptom])
 def list_symptoms() -> List[Symptom]:
-    """Expose every symptom to power the UI."""
+    """Menyediakan seluruh daftar gejala untuk mengisi antarmuka pengguna."""
 
     return get_knowledge_base().symptoms
 
 
 @router.post("/api/diagnose", response_model=DiagnoseResponse)
 def diagnose(payload: DiagnoseRequest, strict: bool = Query(False, description="Hanya tampilkan rule lengkap")) -> DiagnoseResponse:
-    """Evaluate the provided symptoms and return diagnoses."""
+    """Menjalankan evaluasi forward chaining atas gejala terpilih dan mengembalikan hasil diagnosa."""
 
     known_codes = get_symptom_codes()
     unknown = sorted(set(payload.selected) - known_codes)
@@ -55,7 +55,7 @@ def diagnose(payload: DiagnoseRequest, strict: bool = Query(False, description="
 
 @router.get("/", response_class=HTMLResponse)
 def home() -> HTMLResponse:
-    """Serve a minimal UI for manual testing."""
+    """Menyajikan UI minimalis yang membantu pengujian manual via browser."""
 
     html = """
     <!doctype html>

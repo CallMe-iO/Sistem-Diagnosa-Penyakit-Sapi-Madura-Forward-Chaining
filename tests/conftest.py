@@ -1,4 +1,4 @@
-"""Test configuration to ensure local package imports resolve."""
+"""Konfigurasi pengujian agar impor paket lokal dapat dikenali Python."""
 from __future__ import annotations
 
 import sys
