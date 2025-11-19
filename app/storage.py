@@ -27,3 +27,4 @@ def get_symptom_codes() -> set[str]:
 
     kb = get_knowledge_base()
     return {symptom.code for symptom in kb.symptoms}
+                                                                                                                              

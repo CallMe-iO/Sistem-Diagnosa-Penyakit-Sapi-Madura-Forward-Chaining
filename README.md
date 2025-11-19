@@ -13,6 +13,7 @@ Layanan REST berbasis FastAPI dengan UI web ringan untuk mendiagnosis penyakit s
 ## Menjalankan Aplikasi
 
 ```bash
+pindah ke path app dulu
 uvicorn app.main:app --reload
 ```
 
@@ -20,8 +21,8 @@ Akses UI pada `http://localhost:8000/` untuk memilih gejala dan melihat hasil di
 
 ## API Utama
 
-- `GET /api/symptoms` – daftar gejala dari knowledge base.
-- `POST /api/diagnose?strict=true|false` – kirim payload berikut:
+- `GET /api/symptoms` ï¿½ daftar gejala dari knowledge base.
+- `POST /api/diagnose?strict=true|false` ï¿½ kirim payload berikut:
   ```json
   {
     "selected": ["JG01", "JG02", "JG03", "JG04"]
