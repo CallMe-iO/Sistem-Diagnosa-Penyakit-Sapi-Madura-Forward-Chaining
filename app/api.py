@@ -59,37 +59,66 @@ def home() -> HTMLResponse:
 
     html = """
     <!doctype html>
-    <html lang=\"id\">
+    <html lang="id">
     <head>
-        <meta charset=\"utf-8\" />
+        <meta charset="utf-8" />
         <title>Sistem Pakar Diagnosa Penyakit Sapi Madura</title>
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <style>
-            body { font-family: Arial, sans-serif; margin: 2rem; }
-            fieldset { border: 1px solid #ccc; padding: 1rem; }
-            legend { font-weight: bold; }
-            .symptom { margin-bottom: 0.35rem; display: inline-flex; align-items: center; gap: 0.35rem; }
-            button { margin-top: 1rem; padding: 0.6rem 1rem; cursor: pointer; }
-            #result { margin-top: 1.5rem; }
-            .result-card { border: 1px solid #e0e0e0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; background: #fafafa; }
-            .status { font-weight: bold; margin: 0.25rem 0 0.75rem; }
-            .status-complete { color: #0a845e; }
-            .status-partial { color: #c27803; }
-            .empty { color: #666; font-style: italic; }
+            body { background: #f5f7fb; }
+            .card { border: none; border-radius: 1rem; }
+            .card-header { border-bottom: none; background: transparent; }
+            .symptom-checkbox { background: #fff; border-radius: 0.75rem; padding: 0.35rem 0.75rem; }
+            .result-card { border-radius: 0.85rem; }
+            .badge-soft-success { background: rgba(25, 135, 84, 0.15); color: #198754; }
+            .badge-soft-warning { background: rgba(255, 193, 7, 0.2); color: #b7791f; }
+            .empty-state { color: #6c757d; font-style: italic; }
         </style>
     </head>
     <body>
-        <h1>Sistem Pakar Diagnosa Penyakit Sapi Madura</h1>
-        <p>Pilih gejala yang terlihat kemudian tekan <strong>Diagnosa</strong>.</p>
-        <label><input type=\"checkbox\" id=\"strict\" /> Mode ketat (rule lengkap saja)</label>
-        <form id=\"diagnosis-form\">
-            <fieldset id=\"symptom-list\">
-                <legend>Daftar Gejala</legend>
-            </fieldset>
-            <button type=\"submit\">Diagnosa</button>
-        </form>
-        <h2>Hasil</h2>
-        <div id=\"result\" class=\"empty\">Belum ada data</div>
+        <div class="container py-4 py-lg-5">
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-semibold">Sistem Pakar Diagnosa Penyakit Sapi Madura</h1>
+                <p class="text-muted mb-0">Pilih gejala yang terlihat lalu klik <strong>Diagnosa</strong> untuk melihat kemungkinan penyakit.</p>
+            </div>
+            <div class="row g-4 align-items-start"><!-- UI: layout form gejala dan hasil diagnosa -->
+                <div class="col-12 col-md-5">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header pb-0">
+                            <h2 class="h5 mb-1">Daftar Gejala</h2>
+                            <p class="text-muted small mb-3">Centang gejala yang dialami sapi.</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between bg-light rounded-3 px-3 py-2 mb-3">
+                                <div>
+                                    <p class="mb-0 fw-semibold">Mode ketat</p>
+                                    <small class="text-muted">Hanya tampilkan rule lengkap</small>
+                                </div>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="strict">
+                                </div>
+                            </div>
+                            <form id="diagnosis-form">
+                                <div id="symptom-list" class="row row-cols-1 row-cols-lg-2 g-2 mb-3"></div>
+                                <button type="submit" class="btn btn-primary w-100">Diagnosa</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header pb-0">
+                            <h2 class="h5 mb-1">Hasil Diagnosa</h2>
+                            <p class="text-muted small mb-3">Hasil akan ditampilkan di sini setelah proses diagnosa.</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="result" class="empty-state text-center py-5">Belum ada data</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
         let symptomLookup = new Map();
 
@@ -99,15 +128,22 @@ def home() -> HTMLResponse:
             symptomLookup = new Map(symptoms.map(item => [item.code, item.name]));
             const container = document.getElementById('symptom-list');
             symptoms.forEach(symptom => {
-                const label = document.createElement('label');
-                label.className = 'symptom';
+                const wrapper = document.createElement('div');
+                const formCheck = document.createElement('div');
+                formCheck.className = 'form-check symptom-checkbox';
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.value = symptom.code;
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(symptom.name));
-                container.appendChild(label);
-                container.appendChild(document.createElement('br'));
+                checkbox.id = `symptom-${symptom.code}`;
+                checkbox.className = 'form-check-input';
+                const label = document.createElement('label');
+                label.className = 'form-check-label fw-medium';
+                label.setAttribute('for', checkbox.id);
+                label.textContent = symptom.name;
+                formCheck.appendChild(checkbox);
+                formCheck.appendChild(label);
+                wrapper.appendChild(formCheck);
+                container.appendChild(wrapper);
             });
         }
 
@@ -118,28 +154,56 @@ def home() -> HTMLResponse:
             return codes.map(code => symptomLookup.get(code) || code).join(', ');
         }
 
+        function calculateScore(entry) {
+            const total = entry.matched.length + entry.missing.length;
+            if (!total) {
+                return 0;
+            }
+            return entry.matched.length / total;
+        }
+
         function renderResult(payload) {
             const container = document.getElementById('result');
-            container.classList.remove('empty');
+            container.classList.remove('empty-state', 'text-center', 'py-5');
             container.innerHTML = '';
 
             if (!payload.diagnoses.length) {
                 const message = payload.message || 'Tidak diketahui';
-                container.classList.add('empty');
+                container.classList.add('empty-state', 'text-center', 'py-5');
                 container.textContent = message;
                 return;
             }
 
-            payload.diagnoses.forEach(entry => {
-                const card = document.createElement('article');
-                card.className = 'result-card';
+            const results = [...payload.diagnoses];
+            results.sort((a, b) => { // Sorting: tampilkan hasil dengan kecocokan penuh terlebih dahulu
+                if (a.complete !== b.complete) {
+                    return a.complete ? -1 : 1;
+                }
+                const scoreDiff = calculateScore(b) - calculateScore(a);
+                if (scoreDiff !== 0) {
+                    return scoreDiff;
+                }
+                return b.matched.length - a.matched.length;
+            });
+
+            results.forEach(entry => {
+                const card = document.createElement('div');
+                card.className = 'result-card border bg-white shadow-sm p-3 mb-3';
+                const badgeClass = entry.complete ? 'badge badge-soft-success' : 'badge badge-soft-warning';
+                const badgeText = entry.complete ? 'Kecocokan penuh' : 'Masih membutuhkan gejala lain';
                 card.innerHTML = `
-                    <h3>${entry.disease.name}</h3>
-                    <p class="status ${entry.complete ? 'status-complete' : 'status-partial'}">
-                        ${entry.complete ? 'Kecocokan penuh' : 'Masih membutuhkan gejala lain'}
-                    </p>
-                    <p><strong>Gejala terpenuhi:</strong> ${formatSymptoms(entry.matched)}</p>
-                    <p><strong>Perlu diperiksa:</strong> ${entry.missing.length ? formatSymptoms(entry.missing) : 'Tidak ada'}</p>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h3 class="h5 mb-0">${entry.disease.name}</h3>
+                        <span class="${badgeClass}">${badgeText}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="fw-semibold d-block">Gejala terpenuhi</span>
+                        <span>${formatSymptoms(entry.matched)}</span>
+                    </div>
+                    <div>
+                        <span class="fw-semibold d-block">Perlu diperiksa</span>
+                        <span>${entry.missing.length ? formatSymptoms(entry.missing) : 'Tidak ada'}</span>
+                    </div>
                 `;
                 container.appendChild(card);
             });

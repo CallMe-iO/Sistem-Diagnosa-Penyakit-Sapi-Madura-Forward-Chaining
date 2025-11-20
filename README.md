@@ -14,7 +14,7 @@ Layanan REST berbasis FastAPI dengan UI web ringan untuk mendiagnosis penyakit s
 
 ```bash
 pindah ke path app dulu
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 ```
 
 Akses UI pada `http://localhost:8000/` untuk memilih gejala dan melihat hasil diagnosa.
